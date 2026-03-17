@@ -18,14 +18,14 @@ class gameService{
     }
 
     // método de cadastro de Game
-    async Create(title, platform, year, price){
+    async Create(title, year, price, descriptions){
         try{
             const newGame = new Game({ // instanciando módulo de Games
                 // técnica do JS de desestruturação : ao invés de atribuir os parâmetros, coloca o mesmo nome
-                title, 
-                platform,
+                title,
                 year,
-                price
+                price,
+                descriptions
             }) 
             // gravando no banco com método mongoose .save()
             await newGame.save()
@@ -45,13 +45,13 @@ class gameService{
     }
 
     // METODO PARA ALTERAR O JOGO
-    async Update(id, title, plataform, year, price){
+    async Update(id, title, year, price, descriptions){
         try{
             await Game.findByIdAndUpdate(id, {
                 title,
-                plataform,
                 year,
-                price
+                price,
+                descriptions
             })
             console.log(`O jogo com a id: ${id} foi alterado.`)
         }catch(error){

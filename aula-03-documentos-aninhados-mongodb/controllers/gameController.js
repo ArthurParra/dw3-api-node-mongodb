@@ -20,9 +20,9 @@ const getAllGames = async (req,res) => {
 const createGame = async(req, res) => {
     try {
         // desestruturação do corpo da requisição POST
-        const {title, platform, year, price} = req.body
+        const {title, year, price, descriptions} = req.body
         // passando dados para camada Service
-        await gameService.Create(title,platform,year,price)
+        await gameService.Create(title,year,price, descriptions)
         // res.sendStatus(201) envia apenas cod de status
         res.status(201).json({message:"O jogo foi cadastrado com sucesso!"})
     } catch (error) {
@@ -50,14 +50,45 @@ const deleteGame = async(req, res) => {
 }
 
 // FUNCAO PARA ALTERAR UM JOGO
-// const updateGame = async(req, res) => {
-//     try {
-//         const id = req.params.id
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
+const updateGame = async (req, res) => {
+    try {
+        const id = req.params.id
+        const {title, year, price, descriptions} = req.body
+
+        if (ObjectId.isValid(id)){
+            const game = await gameServices.Update(id, title, year, price, descriptions)
+            res.status(200).json({message : "Jogo atualizado com sucesso!", game : game})
+        } else {
+            res.status(400).json({error: "Erro ao validar id para alterar o jogo"})
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "Erro interno do servidor"})
+    }
+}
+
+// Função para buscar um jogo único
+const getOneGame = async (req, res) => {
+    try {
+        const id = req.params.id
+        if(ObjectId.isValid(id)){
+            const game = await gameServices.getOne(id)
+
+            // Verificando se o jogo foi encontrado
+            if (!game) { // Jogo não encontrado
+                res.status(404).json("Jogo buscado não foi encontrado")
+            }else{ // Jogo encontrado;
+                res.status(200).json({game})
+            }
+        } else {
+            res.status(400).json({error : "A id informada é inválida"}) // Bad request
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "Erro interno do servidor"})
+    }
+}
 
 // terminar na proxima aula
 
-export default { getAllGames, createGame, deleteGame} // assim se exporta uma função
+export default { getAllGames, createGame, deleteGame, updateGame, getOneGame} // assim se exporta uma função
